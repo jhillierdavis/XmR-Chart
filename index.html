@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+    <title>iXMR Charts</title>    
+    <meta charset="utf-8">      
+<style>
+    
+body {
+	font: 12px Arial;
+}
+
+text.shadow {
+  stroke: #fff;
+  stroke-width: 2.5px;
+  opacity: 0.9;
+}
+
+path { 
+	stroke: steelblue;
+	stroke-width: 2;
+	fill: none;
+}
+
+line {
+	stroke: lightgrey;
+}
+
+.meanLine {
+	stroke: green;
+}
+
+.axis path,
+.axis line {
+	fill: none;
+	stroke: grey;
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+}
+
+.grid .tick {
+	stroke: lightgrey;
+	opacity: 0.7;
+}
+.grid path {
+	stroke-width: 0;
+}
+
+.firstSigmaArea {
+	fill: #B9BEC4; // #E7EDF5; // PowderBlue;
+  	stroke-width: 0;
+}
+
+.secondSigmaArea {
+	fill: #D0D5DC; 
+  	stroke-width: 0;
+}
+
+.controlLimitArea {
+	fill: #E9EFF6;
+  	stroke-width: 0;
+}
+
+.area {
+	fill: lightsteelblue;
+  	stroke-width: 0;
+}
+
+.lowerControlLimitLine, .upperControlLimitLine  {
+	fill: none;
+	stroke: purple;
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+}
+
+.lowerSecondSigmaLine, .upperSecondSigmaLine  {
+	fill: none;
+	stroke: darkorange;
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+}
+
+.lowerFirstSigmaLine, .upperFirstSigmaLine  {
+	fill: none;
+	stroke: orange;
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+}
+
+div.tooltip {					/* set the CSS for tooltip divs */
+  position: absolute;			/* reference for measurement */
+  text-align: center;			/* align the text to the center */
+  width: 60px;					/* set the width of the rectangle */
+  height: 28px;					/* set the height of the rectangle */
+  padding: 2px;					/* set a border around the rectangle */
+  font: 12px sans-serif;		/* set the font type for the tooltips */
+  background: lightsteelblue;	/* set the colour of the rectangle */
+  border: 0px;					/* turn off the border (0px) */
+  border-radius: 8px;			/* set how rounded the edges of the rectangle is */
+  pointer-events: none;			/* 'none' tells the mouse to ignore the rectangle */
+}
+
+</style>
+<script src="./resources/js/lib/underscore-min.v1.8.3.js"></script>
+<script src="./resources/js/lib/d3.v5.5.0.min.js" ></script>
+<script src="./resources/js/lib/jquery-3.2.1.min.js"></script>
+
+<script src="./resources/js/src/BasicMaths.js"></script>
+<script src="./resources/js/src/IxmrPointInTime.js"></script>
+<script src="./resources/js/src/IxmrDataSet.js"></script>
+<script src="./resources/js/src/IxmrChart.js"></script>
+
+
+<script>    
+    $( document ).ready(function() {
+	console.log('DEBUG: jQuery: Document ready!');
+	// event.preventDefault();
+	
+	$( "#selectData" ).submit(function( event ) {
+		event.preventDefault();
+		
+		console.log( "Handler for .submit() called." );
+		
+		var formData = $('#selectData').serialize();
+		console.log( 'formData=' + formData);
+		
+        });
+        
+        $("#selectExampleData").change(function( event ) {
+            event.preventDefault();
+            var dataFilename = "resources/data/" + $("#selectExampleData").val() + ".csv";
+            console.log( 'dataFilename=' + dataFilename);
+            
+            renderData(dataFilename);
+        });  
+    });
+</script>
+
+<script>
+
+/*
+d3.csv("resources/data/iXMR_Data_Trend_Downward.csv", function(error, data) { 
+    console.log("data=" + JSON.stringify(data));  
+ 
+    var chart = new ObjIxmrChart("body");
+    chart.draw(data);
+});
+*/
+
+
+var dataFile = "resources/data/hugging.csv";
+var ixmrChart = new IxmrChart("#xmrChart");
+renderData(dataFile);
+
+function renderData(dataFile)   {
+    // Remove any existing chart content
+    $("#xmrChart").html("");
+
+// JHD: Migration to v5.5.0
+/*
+    d3.text(dataFile, function(error, text) {
+        processCsvContent( text );
+
+    });
+*/
+
+	d3.text(dataFile).then(function(text) {
+		console.log(text);
+	    processCsvContent( text );
+	});
+
+} // renderData
+
+</script>
+
+<div>
+    <form id="selectData">
+        <select id="selectExampleData">
+            <option value="nochange">None (no change)</option>    
+            <option value="outliers">Outliers</option>
+            <option value="outliers_2">Outliers 2</option>            
+            <option value="shift_upward">Shift/Run (upward)</option>
+            <option value="shift_downward">Shift/Run (downward)</option>
+            <option value="trend">Trend</option>
+            <option value="cycling">Cycling</option>
+            <option value="pushing">Pushing (approaching limits)</option>
+            <option value="mixture">Mixture</option>
+        </select>				
+    </form>
+</div>
+
+<div id="xmrChart"></div>
+
+  <input type="file" onchange="loadFile()" />
+
+  <script>
+    var reader = new FileReader();  
+    
+    function loadFile() {      
+      var file = document.querySelector('input[type=file]').files[0];      
+      reader.addEventListener("load", parseFile, false);
+      if (file) {
+        reader.readAsText(file);
+      }      
+    }
+    
+    function parseFile()    {
+        processCsvContent( reader.result );
+    }
+    
+    function processCsvContent(csvData) {
+        // Remove any existing chart content
+         $("#xmrChart").html("");
+        
+          var rows = d3.csvParseRows( csvData );
+          var xaxisLabel = rows[0][0];
+          var yaxisLabel = rows[0][1];
+          // console.log("Axis labels = " + xaxisLabel + " ,  " + yaxisLabel);
+
+          rows = _.rest(rows, 1); // Strip header row
+          // console.log("rows=" + JSON.stringify(rows));
+          // var objIxmrDataset = new ObjIxmrDataset(rows);
+          var ixmrDataset = new IxmrDataSet(rows);
+
+            
+          ixmrChart.draw(ixmrDataset, xaxisLabel, yaxisLabel);
+    }
+  </script>
