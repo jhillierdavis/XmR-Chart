@@ -1,6 +1,6 @@
 Doing
 ----
-* Upgrade to latest D3.js version (from https://d3js.org/ )
+
 
 Backlog
 -------
@@ -9,3 +9,4 @@ Backlog
 
 Done
 ----
+* Upgrade to latest D3.js version (from https://d3js.org/ )
