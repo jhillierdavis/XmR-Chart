@@ -4,8 +4,7 @@ Doing
 
 Backlog
 -------
-
-
+* Validate selected file (e.g. CSV format) & display error message if invalid (e.g. fails parsing)
 
 Done
 ----
