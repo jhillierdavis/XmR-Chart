@@ -1,10 +1,10 @@
 Doing
 ----
-
+* Upgrade to latest Underscore.js version (from https://underscorejs.org/ )
 
 Backlog
 -------
-* Upgrade to latest Underscore.js version (from https://underscorejs.org/ )
+
 * Upgrade to latest JQuery version (from https://jquery.com/ )
 
 Done
