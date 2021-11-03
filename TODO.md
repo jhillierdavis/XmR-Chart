@@ -1,6 +1,5 @@
 Doing
 ----
-* Add Unit Tests (e.g. via Jasmine)
 
 Backlog
 -------
@@ -10,6 +9,7 @@ Backlog
 
 Done
 ----
+* Add Unit Tests (e.g. via Jasmine)
 * Add screenshots to README.md
 * Upgrade to latest JQuery version (from https://jquery.com/ )
 * Upgrade to latest Underscore.js version (from https://underscorejs.org/ )
