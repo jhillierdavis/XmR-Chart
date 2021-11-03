@@ -1,10 +1,9 @@
 Doing
 ----
-
+* Add screenshots to README.md
 
 Backlog
 -------
-* Add screenshots to README.md
 * Add Unit Tests (e.g. via Jasmine)
 * Validate selected file (e.g. CSV format) & display error message if invalid (e.g. fails parsing)
 * Add explanatory test (to index.html) - explain (or link to) iXMR chart info., detail CSV file upload format
